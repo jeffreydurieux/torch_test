@@ -34,15 +34,25 @@ Zzz <- torch_tensor(Z)
 torch_eq(Zzz,Zz)
 torch_equal(Zzz,Zz)
 
+#########
+set.seed(42)
 X <- matrix(rnorm(10000*2000), nrow = 10000)
 Y <- matrix(runif(2000*2000, min = -4, max = 4), nrow = 2000)
 
 Xx <- torch_tensor(X)
 Yy <- torch_tensor(Y)
 
-set.seed(42)
+
 dim(X);dim(Y)
 system.time(X%*%Y)
 system.time(torch_matmul(Xx,Yy))
+
+Z <- X %*% Y
+Zz <- torch_matmul(Xx,Yy)
+
+identical(Z, as.array(Zz)) # somehow they are not the same, need to figure out why (guess it has to do with machine precision)
+diag(cor(Z,as.array(Zz))) # takes some time to compute but should all be 1
+
+
 
 microbenchmark(X%*%Y, torch_matmul(Xx,Yy), times = 5)
